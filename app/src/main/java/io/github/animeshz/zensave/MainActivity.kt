@@ -1,5 +1,7 @@
 package io.github.animeshz.zensave
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,11 +45,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -77,13 +91,34 @@ fun MainScreen() {
             topBar = {
                 TopAppBar(
                     title = { Text("ZenSave") },
+                    navigationIcon = {
+                        Icon(
+                            rememberVectorPainter(image = Icons.AutoMirrored.Filled.List),
+                            "Menu",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    },
                     colors = TopAppBarDefaults.topAppBarColors()
                         .copy(containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(4.dp))
                 )
             },
             bottomBar = {
                 BottomAppBar {
-                    Text("Bottom")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        FilledTonalButton(
+                            modifier = Modifier.fillMaxHeight(),
+                            shape = RoundedCornerShape(10),
+                            onClick = { /*TODO*/ },
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(rememberVectorPainter(image = Icons.Filled.Home), "")
+                                Text("Home")
+                            }
+                        }
+                    }
                 }
             },
             floatingActionButton = { MainFAB() }
@@ -104,6 +139,7 @@ fun MainScreen() {
 
 @Composable
 fun MainFAB() {
+    val context = LocalContext.current
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -114,7 +150,14 @@ fun MainFAB() {
     }
 
     val items = listOf(
-        MiniFabItem(Icons.AutoMirrored.Filled.ArrowBack, "Import"),
+        MiniFabItem(Icons.AutoMirrored.Filled.ArrowBack, "Import") {
+            context.startActivity(
+                Intent(
+                    context,
+                    TxnParserActivity::class.java
+                )
+            )
+        },
         MiniFabItem(Icons.Filled.Info, "Help"),
     )
     Column(horizontalAlignment = Alignment.End) {
@@ -136,7 +179,7 @@ fun MainFAB() {
                     ) {
                         Text(items[it].title)
                         Spacer(modifier = Modifier.width(12.dp))
-                        FloatingActionButton(onClick = { /*TODO*/ }) {
+                        FloatingActionButton(onClick = items[it].onClick) {
                             Icon(
                                 painter = rememberVectorPainter(image = items[it].icon),
                                 contentDescription = items[it].title
@@ -163,6 +206,7 @@ fun MainFAB() {
 data class MiniFabItem(
     val icon: ImageVector,
     val title: String,
+    val onClick: () -> Unit = {},
 )
 
 @Composable

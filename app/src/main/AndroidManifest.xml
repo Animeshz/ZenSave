@@ -15,6 +15,11 @@
         android:theme="@style/Theme.ZenSave"
         tools:targetApi="31">
         <activity
+            android:name=".TxnParserActivity"
+            android:exported="false"
+            android:label="@string/title_activity_txn_parser"
+            android:theme="@style/Theme.ZenSave" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
